@@ -23,6 +23,8 @@ namespace UserService
 
             services.AddHealthChecks()
                 .AddCheck<DatabaseHealthCheck>("Database");
+            
+            services.AddSwaggerDocumentation();
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -34,6 +36,7 @@ namespace UserService
 
             app.UseMvc();
             app.UseHealthChecks();
+            app.UseSwaggerDocumentation();
         }
     }
 }
