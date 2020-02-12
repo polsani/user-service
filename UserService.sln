@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{781D242A-AF66-4BCB-A0AD-67CE20682102}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{46C87223-0583-4689-A349-A7B9A7D1E1A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService", "src\UserService\UserService.csproj", "{401BE0B9-989B-4084-96C3-438DA0CE4C36}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{401BE0B9-989B-4084-96C3-438DA0CE4C36} = {781D242A-AF66-4BCB-A0AD-67CE20682102}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{401BE0B9-989B-4084-96C3-438DA0CE4C36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{401BE0B9-989B-4084-96C3-438DA0CE4C36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{401BE0B9-989B-4084-96C3-438DA0CE4C36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{401BE0B9-989B-4084-96C3-438DA0CE4C36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
