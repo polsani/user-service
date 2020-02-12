@@ -13,3 +13,7 @@ To run this application execute:
 ```shell
 docker run -d -p 14666:14666 user_service
 ```
+
+## All functions can be accessed by **SWAGGER**
+
+http://localhost:{port}/swagger/index.html
