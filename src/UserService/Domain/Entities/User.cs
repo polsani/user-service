@@ -12,22 +12,22 @@ namespace UserService.Domain.Entities
         private const string EmailRegex =
             @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$";
         
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public Gender Gender { get; private set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public Gender Gender { get; set; }
         
         //TODO Map Email and Birth date as ValueObjects
-        public string Email { get; private set; }
-        public DateTime BirthDate { get; private set; }
+        public string Email { get; set; }
+        public DateTime BirthDate { get; set; }
 
         private User()
         {
             
         }
-        
-        public User(string name, string email, string birthDate, string gender)
+
+        public User(Guid id, string name, string email, string birthDate, string gender)
         {
-            Id = Guid.NewGuid();
+            Id = id;
             Name = name;
             Email = email;
 
@@ -82,6 +82,11 @@ namespace UserService.Domain.Entities
                     "E-mail inválido",
                     Email,
                     new Constraint(EmailValidations.InvalidEmailAddress, null));
+        }
+        
+        public User(string name, string email, string birthDate, string gender) : 
+            this(Guid.NewGuid(), name, email, birthDate, gender)
+        {
         }
 
         public override bool Equals(object obj)
