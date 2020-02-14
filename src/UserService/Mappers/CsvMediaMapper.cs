@@ -19,7 +19,7 @@ namespace UserService.Mappers
 
         public IEnumerable<PreviousImportItem> Map(Stream file, Guid importId)
         {
-            var csvParser = new CsvParser<PreviousImportItem>(new CsvParserOptions(true, ','), 
+            var csvParser = new CsvParser<PreviousImportItem>(new CsvParserOptions(false, ','), 
                 new CsvPreviousImportItemMapping());
 
             var result = csvParser.ReadFromStream(file, Encoding.UTF8).ToList();

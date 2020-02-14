@@ -49,7 +49,11 @@ namespace UserService.Services
                     }
                     else
                     {
-                        _userRepository.UpdateUser(user);
+                        importedUser.Gender = user.Gender;
+                        importedUser.Name = user.Name;
+                        importedUser.BirthDate = user.BirthDate;
+                        
+                        _userRepository.UpdateUser(importedUser);
                         previousImportItem.Status = (int) PreviousImportItemStatus.Updated;
                     }
                 }

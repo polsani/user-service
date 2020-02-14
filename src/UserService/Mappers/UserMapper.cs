@@ -7,9 +7,9 @@ namespace UserService.Mappers
 {
     public class UserMapper : IUserMapper
     {
-        public Domain.Entities.User ConvertToEntity(ViewModels.UserImportRequest userImportRequest)
+        public Domain.Entities.User ConvertToEntity(UserImportRequest userImportRequest)
         {
-            return new Domain.Entities.User(userImportRequest.Name, userImportRequest.Email,
+            return new Domain.Entities.User(userImportRequest.Id, userImportRequest.Name, userImportRequest.Email,
                 userImportRequest.BirthDate, userImportRequest.Gender);
         }
 
