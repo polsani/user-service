@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Domain.Helpers;
+using UserService.Domain.Mappers;
 using UserService.Domain.Services;
 using UserService.ViewModels;
 
@@ -13,6 +14,7 @@ namespace UserService.Controllers
     {
         private readonly ISupportedMediaHelper _supportedMediaHelper;
         private readonly IImportService _importService;
+        private readonly IImportMapper _importMapper;
 
         public UserController(ISupportedMediaHelper supportedMediaHelper,
             IImportService importService)
@@ -43,11 +45,17 @@ namespace UserService.Controllers
 
         [HttpGet]
         [Route("import")]
-        public IActionResult GetImports([FromQuery] bool imported, [FromQuery] bool? approved)
+        public IActionResult GetImports([FromQuery] bool imported, 
+            [FromQuery] bool? approved, 
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20)
         {
+            if (page <= 0 || pageSize <= 0)
+                return NoContent();
+            
             if (!imported)
             {
-                var previousImportNotImported = _importService.GetPreviousImportNotImported();
+                var previousImportNotImported = _importService.GetPreviousImportNotImported(page, pageSize);
 
                 var result = previousImportNotImported.Select(x => new PreviousImportResult
                 {
@@ -58,11 +66,11 @@ namespace UserService.Controllers
             
                 return Json(result);
             }
-            
-            if (approved.HasValue)
-                return approved.Value ? Json("1") : Json("2");
 
-            return Json("3");
+            var imports = _importService.GetImports(approved, page, pageSize);
+            var importsResult = imports.Select(item => _importMapper.ConvertToViewModel(item)).ToList();
+
+            return Json(importsResult);
         }
         
         [HttpGet]
@@ -84,7 +92,20 @@ namespace UserService.Controllers
         [Route("import/{id}/approve")]
         public IActionResult ApproveImport([FromRoute] Guid id)
         {
-            return Accepted();
+            if(_importService.ApproveImport(id))
+                return Accepted();
+
+            return NotFound(id);
+        }
+        
+        [HttpPost]
+        [Route("import/{id}/reprove")]
+        public IActionResult ReproveImport([FromRoute] Guid id)
+        {
+            if(_importService.ReproveImport(id))
+                return Accepted();
+
+            return NotFound(id);
         }
     }
 }

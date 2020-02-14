@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -67,9 +68,43 @@ namespace UserService.Data.Repositories
             return Task.CompletedTask;
         }
 
-        public IEnumerable<Import> GetPreviousImportNotImported()
+        public IEnumerable<Import> GetPreviousImportNotImported(int page, int pageSize)
         {
-            return _dbContext.Import.Where(x => x.ImportDate == null).ToList();
+            return _dbContext.Import
+                .Where(x => x.ImportDate == null)
+                .Take(pageSize)
+                .Skip((page - 1) * pageSize)
+                .ToList();
+        }
+
+        public Import GetImport(Guid id)
+        {
+            return _dbContext.Import.FirstOrDefault(x => x.Id == id);
+        }
+
+        public void UpdateImport(Import import)
+        {
+            _dbContext.Attach(import);
+            _dbContext.SaveChanges();
+        }
+
+        public IEnumerable<PreviousImportItem> GetPreviousImportItems(Guid importId)
+        {
+            return _dbContext.PreviousImportItem.Where(x => x.ImportId == importId).ToList();
+        }
+
+        public IEnumerable<Import> GetImports(bool? approved, int page, int pageSize)
+        {
+            var query = _dbContext.Import.Where(x=>x.ImportDate != null);
+
+            if (approved.HasValue)
+                query = query
+                    .Where(x => x.Approved == approved.Value);
+
+            return query
+                .Take(pageSize)
+                .Skip((page - 1) * pageSize)
+                .ToList();
         }
     }
 }
