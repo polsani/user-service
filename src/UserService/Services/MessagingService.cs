@@ -42,7 +42,7 @@ namespace UserService.Services
             _channel = connection.CreateModel();
         }
 
-        public void SendNotification(string serializedNotification)
+        public void SendUserImport(string serializedUserImport)
         {
             SetupRabbitStructure();
             
@@ -53,7 +53,29 @@ namespace UserService.Services
                 exchange: UserServiceExchange,
                 routingKey: UserServiceRoutingKey,
                 basicProperties: messageProperties,
-                body: Encoding.UTF8.GetBytes(serializedNotification));
+                body: Encoding.UTF8.GetBytes(serializedUserImport));
+        }
+
+        public void SendUsersImports(IEnumerable<string> serializedUsersImports)
+        {
+            SetupRabbitStructure();
+
+            var messageProperties = _channel.CreateBasicProperties();
+            messageProperties.ContentType = "application/json";
+            
+            var batchPublish = _channel.CreateBasicPublishBatch();
+
+            foreach (var serializedUserImport in serializedUsersImports)
+            {
+                batchPublish.Add(
+                    exchange: UserServiceExchange,
+                    routingKey: UserServiceRoutingKey,
+                    mandatory: false,
+                    properties: messageProperties,
+                    body: Encoding.UTF8.GetBytes(serializedUserImport));
+            }
+            
+            batchPublish.Publish();
         }
         /*
         public void ListenUserRegistered()

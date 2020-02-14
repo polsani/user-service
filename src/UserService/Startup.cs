@@ -47,6 +47,9 @@ namespace UserService
             services.AddScoped<IMediaMapperFactory, MediaMapperFactory>();
             services.AddScoped<IMediaMapper, CsvMediaMapper>();
             services.AddScoped<IMediaMapper, ExcelMediaMapper>();
+            services.AddScoped<IImportMapper, ImportMapper>();
+
+            services.AddScoped<IUserToImportMapper, UserToImportMapper>();
 
             services.AddScoped<IImportRepository, ImportRepository>();
 

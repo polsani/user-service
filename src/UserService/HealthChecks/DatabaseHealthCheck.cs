@@ -1,6 +1,8 @@
+using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using UserService.Configurations;
 
 namespace UserService.HealthChecks
 {
@@ -9,11 +11,23 @@ namespace UserService.HealthChecks
         public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, 
             CancellationToken cancellationToken = new CancellationToken())
         {
-            var healthCheckResultHealthy = true;
-
-            return Task.FromResult(healthCheckResultHealthy ? 
-                HealthCheckResult.Healthy() : 
-                HealthCheckResult.Unhealthy());
+            using (var connection = new SqlConnection(UserServiceConfiguration.ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = "SELECT 1;";
+                        command.ExecuteScalar();
+                    }
+                }
+                catch
+                {
+                    return Task.FromResult(HealthCheckResult.Unhealthy());
+                }
+                return Task.FromResult(HealthCheckResult.Healthy());
+            }  
         }
     }
 }
