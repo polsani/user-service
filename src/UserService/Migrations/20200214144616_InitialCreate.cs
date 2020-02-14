@@ -23,6 +23,21 @@ namespace UserService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    name = table.Column<string>(type: "varchar(128)", nullable: false),
+                    gender = table.Column<int>(type: "int", nullable: false),
+                    email = table.Column<string>(type: "varchar(256)", nullable: false),
+                    birth_date = table.Column<DateTime>(type: "datetime", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PreviousImportItem",
                 columns: table => new
                 {
@@ -46,21 +61,24 @@ namespace UserService.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "uq_email",
-                table: "PreviousImportItem",
-                column: "email",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PreviousImportItem_import_id",
                 table: "PreviousImportItem",
                 column: "import_id");
+
+            migrationBuilder.CreateIndex(
+                name: "uq_email",
+                table: "User",
+                column: "email",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "PreviousImportItem");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Import");

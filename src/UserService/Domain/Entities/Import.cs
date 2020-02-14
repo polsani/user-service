@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace UserService.Domain.Entities
 {
-    public class Import
+    public class Import : Entity
     {
         public Guid Id { get; set; }
         public DateTime CreateDate { get; set; }

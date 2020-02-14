@@ -1,8 +1,11 @@
 using System;
 using System.Text;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using UserService.Domain.Mappers;
+using UserService.Domain.Services;
 using UserService.ViewModels;
 
 namespace UserService.Services
@@ -10,12 +13,12 @@ namespace UserService.Services
     public class UserConsumerService : DefaultBasicConsumer
     {
         private readonly MessagingService _messagingService;
-        private readonly IUserMapper _mapper;
+        private readonly IApplicationBuilder _application;
 
-        public UserConsumerService(IUserMapper mapper)
+        public UserConsumerService(IApplicationBuilder app)
         {
             _messagingService = MessagingServiceSingleton.Instance;
-            _mapper = mapper;
+            _application = app;
         }
         
         public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered,
@@ -28,10 +31,17 @@ namespace UserService.Services
 
             try
             {
-                var userRequest = JsonConvert.DeserializeObject<User>(message);
-                var user = _mapper.ConvertToEntity(userRequest);
+                var userRequest = JsonConvert.DeserializeObject<UserImportRequest>(message);
+
+                using (var scope = _application.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                {
+                    var mapper = scope.ServiceProvider.GetService<IUserMapper>();
+                    var user = mapper.ConvertToEntity(userRequest);
+                    
+                    var userService = scope.ServiceProvider.GetService<IUserService>();
+                    userService.PersistUser(user, userRequest.Id);
+                }
                 
-                //_notifierService.Notify(notification);
                 _messagingService.SendAck(deliveryTag);
             }
             catch

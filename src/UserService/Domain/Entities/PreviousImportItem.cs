@@ -3,7 +3,7 @@ using UserService.Data.Annotations;
 
 namespace UserService.Domain.Entities
 {
-    public class PreviousImportItem
+    public class PreviousImportItem : Entity
     {
         [BulkInsertColumnName("id")]
         public Guid Id { get; set; }

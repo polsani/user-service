@@ -17,10 +17,12 @@ namespace UserService.Controllers
         private readonly IImportMapper _importMapper;
 
         public UserController(ISupportedMediaHelper supportedMediaHelper,
-            IImportService importService)
+            IImportService importService,
+            IImportMapper importMapper)
         {
             _supportedMediaHelper = supportedMediaHelper;
             _importService = importService;
+            _importMapper = importMapper;
         }
         
         [HttpPost]
@@ -77,13 +79,7 @@ namespace UserService.Controllers
         [Route("import/{id}")]
         public IActionResult GetImportResult([FromRoute] Guid id)
         {
-            var result = new ImportResult
-            {
-                Failed = 5,
-                Ignored = 10,
-                Inserted = 150,
-                Updated = 20
-            };
+            var result = _importService.GetImportResult(id);
             
             return Json(result);
         }

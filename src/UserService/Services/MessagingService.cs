@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.AspNetCore.Builder;
 using RabbitMQ.Client;
 using UserService.Configurations;
+using UserService.Domain.Mappers;
+using UserService.Domain.Services;
 
 namespace UserService.Services
 {
@@ -42,20 +45,6 @@ namespace UserService.Services
             _channel = connection.CreateModel();
         }
 
-        public void SendUserImport(string serializedUserImport)
-        {
-            SetupRabbitStructure();
-            
-            var messageProperties = _channel.CreateBasicProperties();
-            messageProperties.ContentType = "application/json";
-            
-            _channel.BasicPublish(
-                exchange: UserServiceExchange,
-                routingKey: UserServiceRoutingKey,
-                basicProperties: messageProperties,
-                body: Encoding.UTF8.GetBytes(serializedUserImport));
-        }
-
         public void SendUsersImports(IEnumerable<string> serializedUsersImports)
         {
             SetupRabbitStructure();
@@ -77,8 +66,8 @@ namespace UserService.Services
             
             batchPublish.Publish();
         }
-        /*
-        public void ListenUserRegistered()
+        
+        public void ListenUserRegistered(IApplicationBuilder app)
         {
             SetupRabbitStructure();
 
@@ -87,13 +76,13 @@ namespace UserService.Services
                 prefetchCount: 1,
                 global: false);
 
-            var consumer = new UserConsumerService();
+            var consumer = new UserConsumerService(app);
 
             _channel.BasicConsume(
                 queue: UserServiceRegisteredQueue,
                 autoAck: false,
                 consumer: consumer);
-        }*/
+        }
         
         public void SendAck(ulong deliveryTag)
         {

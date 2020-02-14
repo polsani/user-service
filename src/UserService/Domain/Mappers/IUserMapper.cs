@@ -2,7 +2,7 @@ namespace UserService.Domain.Mappers
 {
     public interface IUserMapper
     {
-        ViewModels.User ConvertToViewModel(Entities.User user);
-        Entities.User ConvertToEntity(ViewModels.User user);
+        ViewModels.User ConvertToEntity(Domain.Entities.User user);
+        Entities.User ConvertToEntity(ViewModels.UserImportRequest userImportRequest);
     }
 }

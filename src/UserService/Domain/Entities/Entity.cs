@@ -1,6 +1,8 @@
+using Manatee.Validation.Notifications;
+
 namespace UserService.Domain.Entities
 {
-    public class Entity
+    public class Entity : Notifiable
     {
         
     }
