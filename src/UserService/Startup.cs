@@ -53,6 +53,7 @@ namespace UserService
             services.AddScoped<IMediaMapper, ExcelMediaMapper>();
             services.AddScoped<IImportMapper, ImportMapper>();
             services.AddScoped<IUserMapper, UserMapper>();
+            services.AddScoped<IImportResultMapper, ImportResultMapper>();
 
             services.AddScoped<IUserToImportMapper, UserToImportMapper>();
 

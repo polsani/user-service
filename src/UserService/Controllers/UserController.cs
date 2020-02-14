@@ -15,14 +15,17 @@ namespace UserService.Controllers
         private readonly ISupportedMediaHelper _supportedMediaHelper;
         private readonly IImportService _importService;
         private readonly IImportMapper _importMapper;
+        private readonly IImportResultMapper _importResultMapper;
 
         public UserController(ISupportedMediaHelper supportedMediaHelper,
             IImportService importService,
-            IImportMapper importMapper)
+            IImportMapper importMapper,
+            IImportResultMapper importResultMapper)
         {
             _supportedMediaHelper = supportedMediaHelper;
             _importService = importService;
             _importMapper = importMapper;
+            _importResultMapper = importResultMapper;
         }
         
         [HttpPost]
@@ -79,7 +82,10 @@ namespace UserService.Controllers
         [Route("import/{id}")]
         public IActionResult GetImportResult([FromRoute] Guid id)
         {
-            var result = _importService.GetImportResult(id);
+            var result = _importResultMapper.ConvertToViewModel(_importService.GetImportResult(id));
+
+            if (result == null)
+                return NotFound(id);
             
             return Json(result);
         }

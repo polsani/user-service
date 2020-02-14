@@ -107,20 +107,28 @@ namespace UserService.Data.Repositories
 
         public ImportResult GetImportResult(Guid importId)
         {
-            return new ImportResult
-            {
-                Failed = UnitOfWork.Context.PreviousImportItem.Count(x => 
-                    x.Status == (int) PreviousImportItemStatus.Failed && x.ImportId == importId),
-                
-                Ignored = UnitOfWork.Context.PreviousImportItem.Count(x => 
-                    x.Status == (int) PreviousImportItemStatus.Ignored && x.ImportId == importId),
-                
-                Inserted = UnitOfWork.Context.PreviousImportItem.Count(x => 
-                    x.Status == (int) PreviousImportItemStatus.Inserted && x.ImportId == importId),
-                
-                Updated = UnitOfWork.Context.PreviousImportItem.Count(x => 
-                    x.Status == (int) PreviousImportItemStatus.Updated && x.ImportId == importId)
-            };
+            var import = UnitOfWork.Context.Import.FirstOrDefault(x => x.Id == importId);
+            
+            if(import != null)
+                return new ImportResult
+                {
+                    Id = import.Id,
+                    CreateDate = import.CreateDate,
+                    AmountRows = import.AmountRows,
+                    Failed = UnitOfWork.Context.PreviousImportItem.Count(x => 
+                        x.Status == (int) PreviousImportItemStatus.Failed && x.ImportId == importId),
+                    
+                    Ignored = UnitOfWork.Context.PreviousImportItem.Count(x => 
+                        x.Status == (int) PreviousImportItemStatus.Ignored && x.ImportId == importId),
+                    
+                    Inserted = UnitOfWork.Context.PreviousImportItem.Count(x => 
+                        x.Status == (int) PreviousImportItemStatus.Inserted && x.ImportId == importId),
+                    
+                    Updated = UnitOfWork.Context.PreviousImportItem.Count(x => 
+                        x.Status == (int) PreviousImportItemStatus.Updated && x.ImportId == importId)
+                };
+
+            return null;
         }
     }
 }
