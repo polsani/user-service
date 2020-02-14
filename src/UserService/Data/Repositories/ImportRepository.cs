@@ -70,8 +70,8 @@ namespace UserService.Data.Repositories
         {
             return UnitOfWork.Context.Import
                 .Where(x => x.ImportDate == null)
-                .Take(pageSize)
                 .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToList();
         }
 
@@ -100,8 +100,8 @@ namespace UserService.Data.Repositories
                     .Where(x => x.Approved == approved.Value);
 
             return query
-                .Take(pageSize)
                 .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToList();
         }
 
