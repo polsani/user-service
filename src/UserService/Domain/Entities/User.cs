@@ -71,14 +71,14 @@ namespace UserService.Domain.Entities
 
             if(string.IsNullOrEmpty(Email))
                 AddNotification(StatusCodes.Status422UnprocessableEntity, 
-                    "EmailAddress.Address", 
+                    "User.Email", 
                     "E-mail não pode ser vazio", 
                     Email, 
                     new Constraint(EmailValidations.EmailNotProvided, null));
             
             else if(!Regex.IsMatch(Email, EmailRegex))
                 AddNotification(StatusCodes.Status422UnprocessableEntity,
-                    "EmailAddress.Address",
+                    "User.Email",
                     "E-mail inválido",
                     Email,
                     new Constraint(EmailValidations.InvalidEmailAddress, null));
