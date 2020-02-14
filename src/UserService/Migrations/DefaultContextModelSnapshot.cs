@@ -83,13 +83,41 @@ namespace UserService.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ImportId");
+
+                    b.ToTable("PreviousImportItem");
+                });
+
+            modelBuilder.Entity("UserService.Domain.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnName("birth_date")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnName("email")
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<int>("Gender")
+                        .HasColumnName("gender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasName("uq_email");
 
-                    b.HasIndex("ImportId");
-
-                    b.ToTable("PreviousImportItem");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("UserService.Domain.Entities.PreviousImportItem", b =>

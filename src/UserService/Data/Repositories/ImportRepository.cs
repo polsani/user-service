@@ -5,22 +5,20 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using UserService.Configurations;
-using UserService.Data.Contexts;
 using UserService.Data.Helpers;
-using UserService.Domain.Data;
+using UserService.Domain.Data.Repositories;
+using UserService.Domain.Data.UnitOfWork;
 using UserService.Domain.Entities;
+using UserService.Domain.Enums;
+using UserService.Domain.Models;
 
 namespace UserService.Data.Repositories
 {
-    public class ImportRepository : IImportRepository
+    public class ImportRepository : RepositoryBase, IImportRepository
     {
-        private readonly DefaultContext _dbContext;
 
-        public ImportRepository(DefaultContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-        
+        public ImportRepository(IUnitOfWork unitOfWork) : base(unitOfWork) { }
+
         public Task PreviousImportCreate(Import import)
         {
             using (var sqlConnection = new SqlConnection(UserServiceConfiguration.ConnectionString))
@@ -70,7 +68,7 @@ namespace UserService.Data.Repositories
 
         public IEnumerable<Import> GetPreviousImportNotImported(int page, int pageSize)
         {
-            return _dbContext.Import
+            return UnitOfWork.Context.Import
                 .Where(x => x.ImportDate == null)
                 .Take(pageSize)
                 .Skip((page - 1) * pageSize)
@@ -79,23 +77,23 @@ namespace UserService.Data.Repositories
 
         public Import GetImport(Guid id)
         {
-            return _dbContext.Import.FirstOrDefault(x => x.Id == id);
+            return UnitOfWork.Context.Import.FirstOrDefault(x => x.Id == id);
         }
 
         public void UpdateImport(Import import)
         {
-            _dbContext.Attach(import);
-            _dbContext.SaveChanges();
+            UnitOfWork.Context.Attach(import);
+            UnitOfWork.Context.SaveChanges();
         }
 
         public IEnumerable<PreviousImportItem> GetPreviousImportItems(Guid importId)
         {
-            return _dbContext.PreviousImportItem.Where(x => x.ImportId == importId).ToList();
+            return UnitOfWork.Context.PreviousImportItem.Where(x => x.ImportId == importId).ToList();
         }
 
         public IEnumerable<Import> GetImports(bool? approved, int page, int pageSize)
         {
-            var query = _dbContext.Import.Where(x=>x.ImportDate != null);
+            var query = UnitOfWork.Context.Import.Where(x=>x.ImportDate != null);
 
             if (approved.HasValue)
                 query = query
@@ -105,6 +103,32 @@ namespace UserService.Data.Repositories
                 .Take(pageSize)
                 .Skip((page - 1) * pageSize)
                 .ToList();
+        }
+
+        public ImportResult GetImportResult(Guid importId)
+        {
+            var import = UnitOfWork.Context.Import.FirstOrDefault(x => x.Id == importId);
+            
+            if(import != null)
+                return new ImportResult
+                {
+                    Id = import.Id,
+                    CreateDate = import.CreateDate,
+                    AmountRows = import.AmountRows,
+                    Failed = UnitOfWork.Context.PreviousImportItem.Count(x => 
+                        x.Status == (int) PreviousImportItemStatus.Failed && x.ImportId == importId),
+                    
+                    Ignored = UnitOfWork.Context.PreviousImportItem.Count(x => 
+                        x.Status == (int) PreviousImportItemStatus.Ignored && x.ImportId == importId),
+                    
+                    Inserted = UnitOfWork.Context.PreviousImportItem.Count(x => 
+                        x.Status == (int) PreviousImportItemStatus.Inserted && x.ImportId == importId),
+                    
+                    Updated = UnitOfWork.Context.PreviousImportItem.Count(x => 
+                        x.Status == (int) PreviousImportItemStatus.Updated && x.ImportId == importId)
+                };
+
+            return null;
         }
     }
 }

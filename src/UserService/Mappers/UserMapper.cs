@@ -1,23 +1,28 @@
 using System;
+using UserService.Domain.Enums;
 using UserService.Domain.Mappers;
+using UserService.ViewModels;
 
 namespace UserService.Mappers
 {
     public class UserMapper : IUserMapper
     {
-        public ViewModels.User ConvertToViewModel(Domain.Entities.User user)
+        public Domain.Entities.User ConvertToEntity(ViewModels.UserImportRequest userImportRequest)
         {
-            return new ViewModels.User
-            {
-                Email = user.Email.Address,
-                Name = user.Name,
-                BirthDate = user.BirthDate.Date
-            };
+            return new Domain.Entities.User(userImportRequest.Name, userImportRequest.Email,
+                userImportRequest.BirthDate, userImportRequest.Gender);
         }
 
-        public Domain.Entities.User ConvertToEntity(ViewModels.User user)
+        public User ConvertToEntity(Domain.Entities.User user)
         {
-            return new Domain.Entities.User(Guid.NewGuid(), user.Name, user.Email, user.BirthDate);
+            return new User
+            {
+                Email = user.Email,
+                Name = user.Name,
+                BirthDate = user.BirthDate.Date.ToString("dd/MM/yyyy"),
+                Gender = Enum.GetName(typeof(Gender), user.Gender),
+                Id = user.Id
+            };
         }
     }
 }

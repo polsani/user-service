@@ -9,10 +9,7 @@ namespace UserService.Data.Configurations
         public void Configure(EntityTypeBuilder<PreviousImportItem> builder)
         {
             builder
-                .ToTable("PreviousImportItem")
-                .HasIndex(x=>x.Email)
-                .HasName("uq_email")
-                .IsUnique();
+                .ToTable("PreviousImportItem");
             
             builder
                 .HasKey(x => x.Id);

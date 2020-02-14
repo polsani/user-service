@@ -9,6 +9,12 @@ namespace UserService.Data.Contexts
     {
         public DbSet<Import> Import { get; set; }
         public DbSet<PreviousImportItem> PreviousImportItem { get; set; }
+        public DbSet<User> User { get; set; }
+
+        public DefaultContext()
+        {
+            Database.SetCommandTimeout(120);
+        }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
             optionsBuilder.UseSqlServer(UserServiceConfiguration.ConnectionString);
@@ -17,6 +23,7 @@ namespace UserService.Data.Contexts
         {
             modelBuilder.ApplyConfiguration(new ImportConfiguration());
             modelBuilder.ApplyConfiguration(new PreviousImportItemConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
         }
     }
 }

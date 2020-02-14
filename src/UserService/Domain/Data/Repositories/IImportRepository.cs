@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UserService.Domain.Entities;
+using UserService.Domain.Models;
 
-namespace UserService.Domain.Data
+namespace UserService.Domain.Data.Repositories
 {
     public interface IImportRepository
     {
@@ -13,5 +14,6 @@ namespace UserService.Domain.Data
         void UpdateImport(Import import);
         IEnumerable<PreviousImportItem> GetPreviousImportItems(Guid importId);
         IEnumerable<Import> GetImports(bool? approved, int page, int pageSize);
+        ImportResult GetImportResult(Guid importId);
     }
 }

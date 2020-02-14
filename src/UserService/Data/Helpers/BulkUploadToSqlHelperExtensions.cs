@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using UserService.Data.Annotations;
 
@@ -17,9 +18,11 @@ namespace UserService.Data.Helpers
             {
                 var type = typeof(T);
                 var property = type.GetProperty(prop.Name);
-                var attributes = (BulkInsertNotMapped[]) property?.GetCustomAttributes(typeof(BulkInsertNotMapped), false);
+                
+                var attributesBulkInsert = (BulkInsertNotMapped[]) property?.GetCustomAttributes(typeof(BulkInsertNotMapped), false);
+                var attributesNotMapped = (NotMappedAttribute[]) property?.GetCustomAttributes(typeof(NotMappedAttribute), false);
 
-                if (attributes?.Length == 0)
+                if (attributesBulkInsert?.Length == 0 && attributesNotMapped?.Length == 0)
                 {
                     var attributeValues = (BulkInsertColumnName[]) property?.GetCustomAttributes(typeof(BulkInsertColumnName), false);
                     
@@ -27,7 +30,6 @@ namespace UserService.Data.Helpers
                         Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
                 }
             }
-                
 
             foreach (var item in data)
             {

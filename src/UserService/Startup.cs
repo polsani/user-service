@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.Configurations;
 using UserService.Data.Contexts;
 using UserService.Data.Repositories;
-using UserService.Domain.Data;
+using UserService.Data.UnitOfWork;
+using UserService.Domain.Data.Repositories;
+using UserService.Domain.Data.UnitOfWork;
 using UserService.Domain.Factories;
 using UserService.Domain.Helpers;
 using UserService.Domain.Mappers;
@@ -23,14 +26,14 @@ namespace UserService
 {
     public class Startup
     {
-        private IConfiguration Configuration { get; }
-        
+        private readonly MessagingService _messagingService;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
-            
             RabbitMqConfiguration.Configure(configuration);
             UserServiceConfiguration.Configure(configuration);
+
+            _messagingService = MessagingServiceSingleton.Instance;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -44,14 +47,22 @@ namespace UserService
             
             services.AddScoped<ISupportedMediaHelper, SupportedMediaHelper>();
             services.AddScoped<IImportService, ImportService>() ;
+            services.AddScoped<IUserService, Services.UserService>();
             services.AddScoped<IMediaMapperFactory, MediaMapperFactory>();
             services.AddScoped<IMediaMapper, CsvMediaMapper>();
             services.AddScoped<IMediaMapper, ExcelMediaMapper>();
             services.AddScoped<IImportMapper, ImportMapper>();
+            services.AddScoped<IUserMapper, UserMapper>();
+            services.AddScoped<IImportResultMapper, ImportResultMapper>();
 
             services.AddScoped<IUserToImportMapper, UserToImportMapper>();
 
             services.AddScoped<IImportRepository, ImportRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPreviousImportItemRepository, PreviousImportItemRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddSingleton(_messagingService);
 
             services.AddSwaggerDocumentation();
         }
@@ -66,6 +77,7 @@ namespace UserService
             app.UseMvc();
             app.UseHealthChecks();
             app.UseSwaggerDocumentation();
+            app.UseUserConsumer(_messagingService);
             
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
